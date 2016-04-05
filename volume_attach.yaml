@@ -16,7 +16,7 @@ parameters:
     constraints:
       - allowed_values: [m1.small, m1.medium, m1.large,m1.tiny]
         description:
-          Value must be one of 'm1.small', 'm1.medium' or 'm1.large'.
+          Value must be one of 'm1.small', 'm1.medium', 'm1.large',(or) 'm1.tiny'.
   image_id:
     type: string
     description: ID of the image to use for the instance to be created.
@@ -33,9 +33,9 @@ parameters:
       - range: { min: 1, max: 1024 }
         description: must be between 1 and 1024 Gb.
 
-  private_network:
+  network:
     type: string
-    label: Private network name or ID
+    label: Private network name or ID/public network name or ID.
     description: Network to attach instance to.
     default: private
 
@@ -49,7 +49,7 @@ resources:
       key_name: { get_param: key_name }
       user_data_format: RAW
       networks:
-        - network: { get_param: private_network }
+        - network: { get_param: network }
       user_data:
         str_replace:
           params:

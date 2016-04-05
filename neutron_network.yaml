@@ -13,18 +13,10 @@ parameters:
     type: string
     description: Keypair to inject into newly created servers
     default: heat_key
-  public_net_id:
+  network:
     type: string
-    description: Public network ID
+    description:  Private network ID/public network ID.
     default: 8bc12757-d07e-4ef5-82ca-809bb1f4c71f
-  username:
-    type: string
-    description: Additional login username
-    default: foobar
-  gecos:
-    type: string
-    description: Additional user full name
-    default: ''
 
 resources:
   mybucket:
@@ -39,22 +31,6 @@ resources:
       user_data: { get_resource: myconfig }
       user_data_format: RAW
 
-  myconfig:
-    type: "OS::Heat::CloudConfig"
-    properties:
-      cloud_config:
-        package_update: true
-        package_upgrade: true
-        users:
-        - default
-        - name: { get_param: username }
-          gecos: { get_param: gecos }
-          groups: users,adm
-          lock-passwd: false
-          passwd: '$6$WP9924IJiLSto8Ng$MSDwCvlT28jMOr9dwPUcJjQzcoB0BV0WCMMPB9xCj1ogbGlvgGOH.dHy5NnqYYqHVkvD5Wca/K4W.qUBbQei61' 
-          shell: /bin/bash
-          sudo: "ALL=(ALL) NOPASSWD:ALL"
-        ssh_pwauth: true
 
   mybucket_management_port:
     type: "OS::Neutron::Port"

@@ -1,39 +1,39 @@
 heat_template_version: 2015-10-15
 
-description: Simple template to deploy a single compute instance
+description: Simple template to deploy a single compute instance.
 
 parameters:
   image:
     type: string
     label: Image name or ID
     description: Image to be used for compute instance
-    default: cirros
+    default: trusty-server-cloudimg-amd64-disk1.img 
   flavor:
     type: string
     label: Flavor
     description: Type of instance (flavor) to be used
-    default: m1.tiny
+    default: m1.small
   key:
     type: string
     label: Key name
     description: Name of key-pair to be used for compute instance
-    default: heat_key
+    
 
-  private_network:
+  network:
     type: string
-    label: Private network name or ID
+    label: Private network name or ID/public network name or ID.
     description: Network to attach instance to.
     default: private
-  username:
-    type: string
-    description: Additional login username
-    default: foobar
-  gecos:
-    type: string
-    description: Additional user full name
-    default: ''
 
 resources:
+  cloud_config:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        write_files:
+        - path: /tmp/file
+          content: "This is a basic Cloud-config example."
+
   my_instance:
     type: OS::Nova::Server
     properties:
@@ -41,26 +41,9 @@ resources:
       flavor: { get_param: flavor }
       key_name: { get_param: key }
       networks:
-        - network: { get_param: private_network }
-
-
-  myconfig:
-    type: "OS::Heat::CloudConfig"
-    properties:
-      cloud_config:
-        package_update: true
-        package_upgrade: true
-        users:
-        - default
-        - name: { get_param: username }
-          gecos: { get_param: gecos }
-          groups: users,adm
-          lock-passwd: false
-          passwd: '$6$WP9924IJiLSto8Ng$MSDwCvlT28jMOr9dwPUcJjQzcoB0BV0WCMMPB9xCj1ogbGlvgGOH.dHy5NnqYYqHVkvD5Wca/K4W.qUBbQei61'
-          shell: /bin/bash
-          sudo: "ALL=(ALL) NOPASSWD:ALL"
-        ssh_pwauth: true
-
+        - network: { get_param: network }
+      user_data_format: RAW
+      user_data: {get_resource: cloud_config}
 
 outputs:
   instance_ip:

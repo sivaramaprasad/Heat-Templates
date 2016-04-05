@@ -18,9 +18,9 @@ parameters:
     label: Key name
     description: Name of key-pair to be used for compute instance
     default: heat_key
-  private_network:
+  network:
     type: string
-    label: Private network name or ID
+    label: Private network name or ID/public network name or ID.
     description: Network to attach instance to.
     default: private
   cluster_size:
@@ -40,7 +40,7 @@ resources:
           flavor: { get_param: flavor }
           key_name: { get_param: key }
           networks:
-            - network: { get_param: private_network }
+            - network: { get_param: network }
 
 
 outputs:
